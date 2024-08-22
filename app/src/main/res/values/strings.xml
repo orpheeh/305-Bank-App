@@ -1,0 +1,50 @@
+<resources>
+    <string name="app_name">305Bank</string>
+    <string name="welcome_title">305 Banking for African people</string>
+    <string name="welcome_message">Secure and centralize your electronique mobile wallet on one account</string>
+    <string name="welcome">Welcome</string>
+    <string name="getting_start">Getting Start</string>
+    <string name="welcome_back">Welcome back</string>
+    <string name="enter_user_key">Give your user key for authentication</string>
+
+    <string name="otp_title">Hi, %s</string>
+    <string name="otp_message">Check your email and enter TOTP for access to your account</string>
+    <string name="otp_field">OTP</string>
+
+    <string name="biometry_title">Account registration</string>
+    <string name="biometry_message">What authentification system do you want to use?</string>
+
+    <string name="user_key">User key</string>
+    <string name="name">Full name</string>
+    <string name="email">Email</string>
+    <string name="phone_number">Phone number</string>
+    <string name="create">Create</string>
+
+    <string name="send_btn">Send</string>
+    <string name="validate_btn">Validate</string>
+    <string name="resend_btn">Resend OTP</string>
+
+    <string name="have_account">Already have account?</string>
+    <string name="no_account">Never register?</string>
+
+    <string name="create_account_btn">Register</string>
+    <string name="signin_btn">Sign In</string>
+
+    <string name="add_fund">Add fund</string>
+    <string name="remove_fund">Remove fund</string>
+    <string name="transfer_fund">Transfer fund</string>
+    <string name="transaction_history">Transaction History</string>
+    <string name="currency">Currency: XAF</string>
+    <string name="balance">Your Balance</string>
+
+    <string name="new_transaction">New Transaction</string>
+    <string name="add_fund_message">Remove money on your  mobile money and transfer it to your 305 bank wallet</string>
+    <string name="remove_fund_message">Transfer your 305 money to your mobile money wellet</string>
+    <string name="transfer_fund_message">Make a transfer to another 305 bank account</string>
+
+    <string name="mobile_money">Mobile Money</string>
+    <string name="account">Account Number</string>
+    <string name="amount">Amount XAF</string>
+    <string name="destinataire_email">Destinataire Email</string>
+
+</resources>
