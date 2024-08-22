@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "871041748660",
+    "project_id": "aninf-305-bsa-challlenge",
+    "storage_bucket": "aninf-305-bsa-challlenge.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:871041748660:android:92eb1545f352ee874911e1",
+        "android_client_info": {
+          "package_name": "aninf305bsa.norlib.xyz"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3q13_PuhPcF3BZauIKkUHQmtxTsZyoWA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:871041748660:android:99bce03730106bed4911e1",
+        "android_client_info": {
+          "package_name": "xyz.norlib.bank305"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3q13_PuhPcF3BZauIKkUHQmtxTsZyoWA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

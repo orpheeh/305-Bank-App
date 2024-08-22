@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">305Bank</string>
+    <string name="app_name">305 Bank</string>
     <string name="welcome_title">305 Banking for African people</string>
     <string name="welcome_message">Secure and centralize your electronique mobile wallet on one account</string>
     <string name="welcome">Welcome</string>
@@ -46,5 +46,5 @@
     <string name="account">Account Number</string>
     <string name="amount">Amount XAF</string>
     <string name="destinataire_email">Destinataire Email</string>
-
+    <string name="default_notification_channel_id">bank_channel</string>
 </resources>

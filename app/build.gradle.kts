@@ -1,16 +1,22 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    // Add the Google services Gradle plugin
+    id("com.google.gms.google-services")
 }
 
 android {
     namespace = "xyz.norlib.bank305"
     compileSdk = 34
 
+    packaging {
+        resources.excludes.add("META-INF/DEPENDENCIES")
+    }
+
     defaultConfig {
         applicationId = "xyz.norlib.bank305"
-        minSdk = 24
-        targetSdk = 34
+        minSdk = 23
+        targetSdk = 33
         versionCode = 1
         versionName = "1.0"
 
@@ -50,7 +56,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -60,8 +65,29 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation("androidx.compose.material:material-icons-extended")
-    implementation("androidx.navigation:navigation-compose:2.7.4")
+    implementation("androidx.navigation:navigation-compose:2.7.7")
+
+    // BSA
+    implementation("com.bsa.sdk:BsaAuthentication:1.0.8@aar")
+    // retrofit2
+    implementation("com.squareup.okhttp3:logging-interceptor:3.14.9")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.google.code.gson:gson:2.10.1")
+    // websocket
+    implementation("com.github.NaikSoftware:StompProtocolAndroid:1.6.4")
+    // biometric
+    implementation("androidx.biometric:biometric:1.1.0")
+    implementation("com.warrenstrange:googleauth:1.4.0")
+
     implementation(libs.androidx.ui.text.google.fonts)
+    implementation("androidx.preference:preference-ktx:1.2.1")
+
+    //Firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation(libs.firebase.messaging.ktx)
+    implementation("com.google.accompanist:accompanist-permissions:0.30.1")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

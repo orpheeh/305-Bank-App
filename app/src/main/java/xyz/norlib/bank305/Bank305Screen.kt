@@ -1,19 +1,38 @@
 package xyz.norlib.bank305
 
+import android.Manifest
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.ui.theme.AppTypography
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionState
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.shouldShowRationale
+import com.google.firebase.Firebase
+import com.google.firebase.messaging.messaging
+import kotlinx.coroutines.tasks.await
 import xyz.norlib.bank305.data.User
 import xyz.norlib.bank305.data.fakeUser
 import xyz.norlib.bank305.ui.BiometryScreen
@@ -45,6 +64,9 @@ enum class Bank305Screen() {
 fun Bank305App(
     navController: NavHostController = rememberNavController()
 ) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        RequestNotificationPermissionDialog()
+    }
     Scaffold(topBar = {
         Bank305AppBar()
     }) { innerPadding ->
@@ -108,4 +130,39 @@ fun Bank305App(
             }
         }
     }
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+@Composable
+fun RequestNotificationPermissionDialog() {
+    val permissionState =
+        rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
+
+    if (!permissionState.status.isGranted) {
+        if (permissionState.status.shouldShowRationale) RationaleDialog()
+        else PermissionDialog { permissionState.launchPermissionRequest() }
+    }
+}
+
+@Composable
+fun RationaleDialog() {
+    AlertDialog(onDismissRequest = { },
+        confirmButton = {},
+        title = { Text("Notification permission", style = AppTypography.titleMedium) },
+        text = { Text("The notification permission is important for this app. Please grant permission ") }
+    )
+}
+
+@Composable
+fun PermissionDialog(onPermissionRequestButtonClicked: () -> Unit) {
+    AlertDialog(onDismissRequest = { },
+        confirmButton = {
+            TextButton(
+                onClick = { onPermissionRequestButtonClicked() }
+            ) { Text("Confirm") }
+        },
+        title = { Text("Notification permission", style = AppTypography.titleMedium) },
+        text = { Text("The notification permission is important for this app. Please grant permission ") }
+    )
 }
