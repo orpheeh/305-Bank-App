@@ -80,8 +80,11 @@ dependencies {
     implementation("androidx.biometric:biometric:1.1.0")
     implementation("com.warrenstrange:googleauth:1.4.0")
 
-    implementation(libs.androidx.ui.text.google.fonts)
+    implementation("io.reactivex.rxjava2:rxjava:2.2.5")
     implementation("androidx.preference:preference-ktx:1.2.1")
+
+    // Retrofit with Scalar Converter
+    implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
 
     //Firebase
     implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
@@ -89,6 +92,7 @@ dependencies {
     implementation(libs.firebase.messaging.ktx)
     implementation("com.google.accompanist:accompanist-permissions:0.30.1")
 
+    implementation(libs.androidx.ui.text.google.fonts)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

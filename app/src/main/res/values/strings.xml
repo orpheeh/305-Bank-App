@@ -14,7 +14,7 @@
     <string name="biometry_title">Account registration</string>
     <string name="biometry_message">What authentification system do you want to use?</string>
 
-    <string name="user_key">User key</string>
+    <string name="user_key">User key (Email)</string>
     <string name="name">Full name</string>
     <string name="email">Email</string>
     <string name="phone_number">Phone number</string>
@@ -47,4 +47,6 @@
     <string name="amount">Amount XAF</string>
     <string name="destinataire_email">Destinataire Email</string>
     <string name="default_notification_channel_id">bank_channel</string>
+
+    <string name="in_app_auth_text">User and Device Authentification</string>
 </resources>

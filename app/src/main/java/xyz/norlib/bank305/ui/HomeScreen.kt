@@ -1,11 +1,13 @@
 package xyz.norlib.bank305.ui
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -34,8 +36,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.ui.theme.AppTypography
 import xyz.norlib.bank305.R
+import xyz.norlib.bank305.business.api.BankApi
 import xyz.norlib.bank305.data.Transaction
 import xyz.norlib.bank305.data.fakeTansactions
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.launch
+import xyz.norlib.bank305.business.BankUiState
+import xyz.norlib.bank305.business.BankViewModel
+import xyz.norlib.bank305.ui.components.Loader
 
 @Composable
 fun HomeScreen(
@@ -44,6 +53,14 @@ fun HomeScreen(
     remove: () -> Unit,
     transfer: () -> Unit
 ) {
+    val bankViewModel: BankViewModel = viewModel()
+    when (bankViewModel.bankUiState) {
+        is BankUiState.Loading -> Loader()
+        is BankUiState.Success -> Text(
+            bankViewModel.bankUiState.toString(), modifier = Modifier.fillMaxWidth()
+        )
+        is BankUiState.Error -> Text("Failed to load your data", modifier = Modifier.fillMaxSize())
+    }
     Column {
         Balance(onUserButtonClicked = onUserButtonClicked)
         Menu(add, remove, transfer)

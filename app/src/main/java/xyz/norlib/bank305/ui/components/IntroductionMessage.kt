@@ -29,11 +29,6 @@ fun IntroductionMessage(
 ) {
     Column(modifier = modifier.padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally) {
-        Image(
-            painter = painterResource(id = R.drawable.logotype__fr_icon),
-            contentDescription = "305",
-            modifier = Modifier.size(150.dp)
-        )
         Text(
             stringResource(id = title, titleData),
             style = AppTypography.displayMedium,

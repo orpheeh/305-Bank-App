@@ -13,6 +13,7 @@ import com.fnsv.bsa.sdk.BsaSdk
 import com.fnsv.bsa.sdk.callback.SdkResponseCallback
 import com.fnsv.bsa.sdk.response.ErrorResult
 import com.fnsv.bsa.sdk.response.TokenResponse
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import xyz.norlib.bank305.R
@@ -67,3 +68,5 @@ class MyFirebaseMessageService : FirebaseMessagingService() {
         manager.notify(Random.nextInt(), notificationBuilder.build())
     }
 }
+
+

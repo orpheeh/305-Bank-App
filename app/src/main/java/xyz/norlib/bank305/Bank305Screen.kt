@@ -2,37 +2,28 @@ package xyz.norlib.bank305
 
 import android.Manifest
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.ui.theme.AppTypography
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
-import com.google.firebase.Firebase
-import com.google.firebase.messaging.messaging
-import kotlinx.coroutines.tasks.await
+import xyz.norlib.bank305.data.RegistrationData
 import xyz.norlib.bank305.data.User
 import xyz.norlib.bank305.data.fakeUser
 import xyz.norlib.bank305.ui.BiometryScreen
@@ -64,6 +55,16 @@ enum class Bank305Screen() {
 fun Bank305App(
     navController: NavHostController = rememberNavController()
 ) {
+    var registration by remember {
+        mutableStateOf(
+            RegistrationData(
+                user = User(userKey = "", name = "", email = "", phone = ""),
+                authType = "",
+                disposeToken = ""
+            )
+        )
+    }
+
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         RequestNotificationPermissionDialog()
     }
@@ -79,29 +80,39 @@ fun Bank305App(
                 WelcomeScreen(
                     modifier = Modifier,
                     onCreateButtonClicked = { navController.navigate(Bank305Screen.Register.name) },
-                    onSignInButtonClicked = { navController.navigate(Bank305Screen.Login.name) }
+                    onSignInButtonClicked = { navController.navigate(Bank305Screen.Login.name) },
+                    onRedirect = { navController.navigate(Bank305Screen.Home.name) }
                 )
             }
             composable(route = Bank305Screen.OTP.name) {
                 OTPScreen(
                     modifier = Modifier,
-                    onSendButtonClicked = { navController.navigate(Bank305Screen.Biometry.name) },
+                    onSendButtonClicked = {
+                        registration.disposeToken = it
+                        navController.navigate(Bank305Screen.Biometry.name)
+                    },
                     onResendButtonClicked = { navController.navigate(Bank305Screen.Welcome.name) },
-                    user = fakeUser
+                    user = registration.user
                 )
             }
             composable(route = Bank305Screen.Register.name) {
                 RegisterScreen(
                     modifier = Modifier,
                     onCancleButtonClicked = { navController.navigate(Bank305Screen.Login.name) },
-                    onCreateButtonClicked = { navController.navigate(Bank305Screen.OTP.name) }
+                    onCreateButtonClicked = {
+                        registration.user = it
+                        navController.navigate(Bank305Screen.OTP.name)
+                    }
                 )
             }
             composable(route = Bank305Screen.Login.name) {
+                registration.isLogin = true
                 LoginScreen(
                     modifier = Modifier,
                     onCancleButtonClicked = { navController.navigate(Bank305Screen.Register.name) },
-                    onLoginButtonClicked = { navController.navigate(Bank305Screen.OTP.name) }
+                    onLoginButtonClicked = {
+                        registration.user = it
+                        navController.navigate(Bank305Screen.OTP.name) }
                 )
             }
             composable(route = Bank305Screen.Home.name) {
@@ -111,7 +122,9 @@ fun Bank305App(
                     transfer = { navController.navigate(Bank305Screen.TransferFund.name) })
             }
             composable(route = Bank305Screen.Profile.name) {
-                ProfileScreen({}, { navController.popBackStack() })
+                ProfileScreen({
+                    navController.navigate(Bank305Screen.Welcome.name)
+                }, { navController.popBackStack() })
             }
             composable(route = Bank305Screen.AddFund.name) {
                 AddFund()
@@ -125,7 +138,10 @@ fun Bank305App(
             composable(route = Bank305Screen.Biometry.name) {
                 BiometryScreen(
                     modifier = Modifier,
-                    onSendButtonClicked = { navController.navigate(Bank305Screen.Home.name) },
+                    onSendButtonClicked = {
+                        navController.navigate(Bank305Screen.Welcome.name)
+                    },
+                    registrationData = registration
                 )
             }
         }

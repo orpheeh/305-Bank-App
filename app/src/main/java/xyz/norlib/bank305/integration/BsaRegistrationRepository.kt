@@ -1,5 +1,6 @@
 package xyz.norlib.bank305.integration
 
+import android.util.Log
 import androidx.fragment.app.FragmentActivity
 import com.fnsv.bsa.sdk.BsaSdk
 import com.fnsv.bsa.sdk.callback.SdkResponseCallback
@@ -118,31 +119,36 @@ object BsaRegistrationRepository {
         user: User,
         authType: String,
         disposeToken: String,
-        onSuccess: (AuthBiometricResponse?) -> Unit,
+        onSuccess: (RegisterUserResponse?) -> Unit,
         onFailed: (ErrorResult?) -> Unit,
     ){
+        Log.d("BSA Dispose Token", disposeToken)
         val params: MutableMap<String, Any> = HashMap()
-        params["userKey"] = user.userKey
+        params["userKey"] = user.email
         params["name"] = user.name
         params["phoneNum"] = user.phone
         params["email"] = user.email
-        params["authType"] = authType
+        params["authType"] = 3
         params["agreeGccs"] = true
         params["agreePerson"] = true
         params["agreeDevice"] = true
         params["disposeToken"] = disposeToken
         FirebaseMessaging.getInstance().token.addOnSuccessListener { token ->
             params["token"] = token
+            Log.d("BSA TOKEN", token)
+            BsaSdk.getInstance().sdkService.registerUser(params, object:
+                SdkResponseCallback<RegisterUserResponse> {
+                override fun onSuccess(result: RegisterUserResponse?) {
+                    Log.d("BSA REGISTER SUCCESS", result?.data.toString())
+                    Log.d("BSA REGISTER SUCCESS", result?.data?.secretKey.toString())
+                    onSuccess(result)
+                }
+                override fun onFailed(errorResult: ErrorResult?) {
+                    Log.d("BSA REGISTER SUCCESS", errorResult.toString())
+                    onFailed(errorResult)
+                }
+            })
         }
-        BsaSdk.getInstance().sdkService.registerUser(params, object:
-            SdkResponseCallback<RegisterUserResponse> {
-            override fun onSuccess(result: RegisterUserResponse?) {
-                onSuccess(result)
-            }
-            override fun onFailed(errorResult: ErrorResult?) {
-                onFailed(errorResult)
-            }
-        })
     }
 
 }

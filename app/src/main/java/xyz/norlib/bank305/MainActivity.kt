@@ -9,6 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentActivity
 import com.example.compose.AppTheme
 import com.fnsv.bsa.sdk.BsaSdk
 import com.google.firebase.Firebase
@@ -17,8 +18,7 @@ import kotlinx.coroutines.tasks.await
 import xyz.norlib.bank305.integration.BSA_API_URL
 import xyz.norlib.bank305.integration.BSA_CLIENT_KEY
 
-
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         BsaSdk.getInstance().init(
