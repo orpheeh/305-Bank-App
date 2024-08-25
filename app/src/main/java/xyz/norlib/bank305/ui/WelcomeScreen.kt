@@ -70,8 +70,8 @@ fun WelcomeScreen(
             modifier = modifier
         )
         InAppAuthentication(loading = loading, onSuccess = {
-           // loading = false
-            //onRedirect()
+            loading = false
+            onRedirect()
         }) {
             loading = false
         }

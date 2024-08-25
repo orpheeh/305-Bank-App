@@ -1,5 +1,6 @@
 package xyz.norlib.bank305.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -35,12 +36,17 @@ fun InAppAuthentication(
     onFailure: () -> Unit
 ) {
     BsaAuthentication.inAppAuthentication("",
+        isAuth = false,
         fragmentActivity = LocalContext.current as FragmentActivity,
         onSuccess = {
+            Log.d("BSA IN-APP","Success Authentification")
             onSuccess()
         },
         onFailed = {
-            onFailure()
+            if(it?.errorCode != 2010) {
+                onFailure()
+            }
+            Log.d("BSA IN-APP ERROR", it?.errorCode.toString())
         }, onProcess = {
         })
     if (loading) {

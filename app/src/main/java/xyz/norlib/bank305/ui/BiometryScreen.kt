@@ -41,6 +41,7 @@ import androidx.fragment.app.FragmentActivity
 import com.example.ui.theme.AppTypography
 import com.fnsv.bsa.sdk.response.RegisterUserResponse
 import xyz.norlib.bank305.R
+import xyz.norlib.bank305.business.model.UserModel
 import xyz.norlib.bank305.data.RegistrationData
 import xyz.norlib.bank305.integration.BsaAuthentication
 import xyz.norlib.bank305.integration.BsaDeviceRegistrationRepository
@@ -111,7 +112,6 @@ fun BiometryForm(
                 if (f != null) {
                     try {
                         BsaRegistrationRepository.localAuthentifcation(f, onSuccess = {
-
                             if (registrationData.isLogin) {
                                 try {
                                     BsaDeviceRegistrationRepository.deviceReregistration(
@@ -142,6 +142,14 @@ fun BiometryForm(
                                     registrationData.disposeToken.toString(),
                                     onSuccess = {
                                         //TODO create user account on backend server
+                                        bankViewModel.createUser(
+                                            userModel = UserModel(
+                                                userKey = registrationData.user.userKey,
+                                                name = registrationData.user.name,
+                                                email = registrationData.user.userKey,
+                                                balance = 0
+                                            )
+                                        )
                                         BsaAuthentication.inAppAuthentication(
                                             "",
                                             fragmentActivity = f,

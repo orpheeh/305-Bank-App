@@ -1,3 +1,10 @@
 package xyz.norlib.bank305.business.model
 
-data class UserModel(val balance: Int, val userKey: String, val name: String, val email: String)
+import com.google.gson.annotations.SerializedName
+
+data class UserModel(
+    @SerializedName("balance") val balance: Int,
+    @SerializedName("userKey") val userKey: String,
+    @SerializedName("name") val name: String,
+    @SerializedName("email") val email: String,
+)

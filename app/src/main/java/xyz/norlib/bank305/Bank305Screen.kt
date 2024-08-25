@@ -112,7 +112,8 @@ fun Bank305App(
                     onCancleButtonClicked = { navController.navigate(Bank305Screen.Register.name) },
                     onLoginButtonClicked = {
                         registration.user = it
-                        navController.navigate(Bank305Screen.OTP.name) }
+                        navController.navigate(Bank305Screen.OTP.name)
+                    }
                 )
             }
             composable(route = Bank305Screen.Home.name) {
@@ -127,13 +128,17 @@ fun Bank305App(
                 }, { navController.popBackStack() })
             }
             composable(route = Bank305Screen.AddFund.name) {
-                AddFund()
+                AddFund(
+                    onCancel = { navController.navigate(Bank305Screen.Home.name) },
+                    onCOnfirm = { navController.navigate(Bank305Screen.Home.name) })
             }
             composable(route = Bank305Screen.RemoveFund.name) {
-                RemoveFund()
+                RemoveFund(onCancel = { navController.navigate(Bank305Screen.Home.name) },
+                    onCOnfirm = { navController.navigate(Bank305Screen.Home.name) })
             }
             composable(route = Bank305Screen.TransferFund.name) {
-                TransferFund()
+                TransferFund(onCancel = { navController.navigate(Bank305Screen.Home.name) },
+                    onCOnfirm = { navController.navigate(Bank305Screen.Home.name) })
             }
             composable(route = Bank305Screen.Biometry.name) {
                 BiometryScreen(

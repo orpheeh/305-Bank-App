@@ -13,7 +13,6 @@ import com.fnsv.bsa.sdk.BsaSdk
 import com.fnsv.bsa.sdk.callback.SdkResponseCallback
 import com.fnsv.bsa.sdk.response.ErrorResult
 import com.fnsv.bsa.sdk.response.TokenResponse
-import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import xyz.norlib.bank305.R
@@ -22,9 +21,10 @@ import kotlin.random.Random
 class MyFirebaseMessageService : FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
+        //Log.d("BSA NOTFI", remoteMessage.data.toString())
         BsaSdk.getInstance().sdkService.responsePushMessage(remoteMessage.data)
         remoteMessage.notification?.let { message ->
-            sendNotification(message)
+             sendNotification(message)
         }
     }
 
@@ -33,10 +33,17 @@ class MyFirebaseMessageService : FirebaseMessagingService() {
         BsaSdk.getInstance().sdkService.registerPushToken(token,
             object : SdkResponseCallback<TokenResponse> {
                 override fun onSuccess(result: TokenResponse?) {
-                    Log.d("Device Token has been updated successfully", "Result code: ${result?.rtCode}")
+                    Log.d(
+                        "Device Token has been updated successfully",
+                        "Result code: ${result?.rtCode}"
+                    )
                 }
+
                 override fun onFailed(errorResult: ErrorResult?) {
-                    Log.d("Failed to update the device token", "Error code: ${errorResult?.errorCode}")
+                    Log.d(
+                        "Failed to update the device token",
+                        "Error code: ${errorResult?.errorCode}"
+                    )
                 }
             })
     }
@@ -62,7 +69,8 @@ class MyFirebaseMessageService : FirebaseMessagingService() {
         val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(channelId, "305_bank", NotificationManager.IMPORTANCE_DEFAULT)
+            val channel =
+                NotificationChannel(channelId, "305_bank", NotificationManager.IMPORTANCE_DEFAULT)
             manager.createNotificationChannel(channel)
         }
         manager.notify(Random.nextInt(), notificationBuilder.build())

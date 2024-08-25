@@ -1,5 +1,6 @@
 package xyz.norlib.bank305.ui
 
+import android.os.Build
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +27,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,7 +49,17 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import xyz.norlib.bank305.business.BankUiState
 import xyz.norlib.bank305.business.BankViewModel
+import xyz.norlib.bank305.business.model.TransactionModel
+import xyz.norlib.bank305.data.RegistrationData
+import xyz.norlib.bank305.data.fakeUser
+import xyz.norlib.bank305.integration.BsaUserInformation
+import xyz.norlib.bank305.ui.components.InAppAuthentication
 import xyz.norlib.bank305.ui.components.Loader
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Date
+
+val bankViewModel: BankViewModel = BankViewModel()
 
 @Composable
 fun HomeScreen(
@@ -53,62 +68,148 @@ fun HomeScreen(
     remove: () -> Unit,
     transfer: () -> Unit
 ) {
-    val bankViewModel: BankViewModel = viewModel()
-    when (bankViewModel.bankUiState) {
-        is BankUiState.Loading -> Loader()
-        is BankUiState.Success -> Text(
-            bankViewModel.bankUiState.toString(), modifier = Modifier.fillMaxWidth()
-        )
-        is BankUiState.Error -> Text("Failed to load your data", modifier = Modifier.fillMaxSize())
+    var loading by remember { mutableStateOf(true) }
+    var balance by remember { mutableStateOf(-1) }
+    var transactions by remember { mutableStateOf(listOf<TransactionModel>()) }
+    var registrationData by remember {
+        mutableStateOf(RegistrationData(user = fakeUser, authType = "", disposeToken = ""))
     }
-    Column {
-        Balance(onUserButtonClicked = onUserButtonClicked)
-        Menu(add, remove, transfer)
-        Text(
-            stringResource(id = R.string.transaction_history),
-            style = AppTypography.titleLarge,
-            modifier = Modifier.padding(8.dp)
-        )
-        TransactionHistory(transactions = fakeTansactions)
+
+    if (loading) {
+        BsaUserInformation.deviceCheck {
+            registrationData = it
+            loading = false
+            Log.d("BSA USER", registrationData.user.userKey)
+            bankViewModel.getUserData(registrationData.user.userKey)
+            bankViewModel.getAllTransaction(registrationData.user.userKey)
+        }
     }
+    if (!loading) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            when (bankViewModel.bankUiState) {
+                is BankUiState.Loading -> Balance(
+                    onUserButtonClicked = onUserButtonClicked,
+                    balance = 0,
+                    showData = false
+                )
+
+                is BankUiState.Success -> {
+                    balance = (bankViewModel.bankUiState as BankUiState.Success).user.balance
+                    Balance(
+                        onUserButtonClicked = onUserButtonClicked,
+                        balance = balance
+                    )
+                    Transactions(
+                        add = add,
+                        remove = remove,
+                        transfer = transfer,
+                        transactions = transactions.reversed()
+                    )
+                }
+
+                is BankUiState.SuccessGetTransaction -> {
+                    transactions =
+                        (bankViewModel.bankUiState as BankUiState.SuccessGetTransaction).transactions
+                    Balance(
+                        onUserButtonClicked = onUserButtonClicked,
+                        balance = balance
+                    )
+                    Transactions(
+                        add = add,
+                        remove = remove,
+                        transfer = transfer,
+                        transactions = transactions.reversed()
+                    )
+                }
+
+                is BankUiState.Error -> Text(
+                    "Failed to load your data",
+                    modifier = Modifier.fillMaxSize()
+                )
+
+                else -> Text("Please restart app !")
+            }
+        }
+    } else {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Loader()
+        }
+    }
+
 }
 
 @Composable
-fun Balance(modifier: Modifier = Modifier, onUserButtonClicked: () -> Unit) {
-    Row(
+fun Transactions(
+    add: () -> Unit,
+    remove: () -> Unit,
+    transfer: () -> Unit,
+    transactions: List<TransactionModel>
+) {
+    Menu(add, remove, transfer)
+    Text(
+        stringResource(id = R.string.transaction_history),
+        style = AppTypography.titleLarge,
+        modifier = Modifier.padding(8.dp)
+    )
+    TransactionHistory(transactions = transactions)
+}
+
+@Composable
+fun Balance(
+    modifier: Modifier = Modifier,
+    showData: Boolean = true,
+    onUserButtonClicked: () -> Unit, balance: Int
+) {
+    Box(
         modifier = modifier
             .fillMaxWidth()
             .background(color = colorResource(id = R.color.bank_blue)),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.Bottom,
     ) {
-        Column(modifier = modifier.padding(8.dp)) {
-            Text(
-                "1,235,265", style = AppTypography.displaySmall,
-                color = Color.White
-            )
-            Text(
-                stringResource(id = R.string.balance), style = AppTypography.bodyLarge,
-                color = Color.White
-            )
-        }
-        Column(
-            modifier = modifier.padding(8.dp),
-            horizontalAlignment = Alignment.End
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Bottom,
         ) {
-            IconButton(onClick = { onUserButtonClicked() }) {
-                Icon(
-                    imageVector = Icons.Default.ManageAccounts,
-                    contentDescription = null,
-                    tint = Color.White
+            Column(modifier = modifier.padding(8.dp)) {
+                if (showData) {
+                    Text(
+                        balance.toString(), style = AppTypography.displaySmall,
+                        color = Color.White
+                    )
+                } else {
+                    Loader(16.dp)
+                }
+                Text(
+                    stringResource(id = R.string.balance), style = AppTypography.bodyLarge,
+                    color = Color.White
                 )
             }
-            Text(
-                stringResource(id = R.string.currency), style = AppTypography.bodyLarge,
-                color = Color.Gray,
-            )
-        }
+            Column(
+                modifier = modifier.padding(8.dp),
+                horizontalAlignment = Alignment.End
+            ) {
+                IconButton(onClick = { onUserButtonClicked() }) {
+                    Icon(
+                        imageVector = Icons.Default.ManageAccounts,
+                        contentDescription = null,
+                        tint = Color.White
+                    )
+                }
+                Text(
+                    stringResource(id = R.string.currency), style = AppTypography.bodyLarge,
+                    color = Color.Gray,
+                )
+            }
 
+        }
     }
 }
 
@@ -138,7 +239,7 @@ fun MenuItem(label: String, onClick: () -> Unit) {
 }
 
 @Composable
-fun TransactionHistory(transactions: List<Transaction>) {
+fun TransactionHistory(transactions: List<TransactionModel>) {
     LazyColumn(modifier = Modifier.padding(16.dp)) {
         items(transactions.size) { it ->
             TransactionItem(transaction = transactions[it])
@@ -147,7 +248,7 @@ fun TransactionHistory(transactions: List<Transaction>) {
 }
 
 @Composable
-fun TransactionItem(transaction: Transaction) {
+fun TransactionItem(transaction: TransactionModel) {
     Card(modifier = Modifier.padding(8.dp)) {
         Row(
             modifier = Modifier
@@ -162,12 +263,11 @@ fun TransactionItem(transaction: Transaction) {
                     transaction.amount.toString(), style = AppTypography.bodyLarge, color =
                     colorResource(id = R.color.bank_blue)
                 )
-                Text(transaction.date)
             }
             Spacer(modifier = Modifier.width(50.dp))
             Column {
                 Text(transaction.destinataire, style = AppTypography.bodyMedium)
-                Text(transaction.destinataireDetail)
+                Text(transaction.destinataireDetail.toString())
             }
         }
     }
